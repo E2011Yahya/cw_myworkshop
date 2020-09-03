@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title>Flask Jinja Template</title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="1894.5">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 20.0px; font: 12.0px Menlo; color: #0744b8; -webkit-text-stroke: #0744b8}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: right; line-height: 20.0px; font: 12.0px Menlo; color: #15171a; color: rgba(21, 23, 26, 0.3); -webkit-text-stroke: rgba(21, 23, 26, 0.3); min-height: 14.0px}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 20.0px; font: 12.0px Menlo; color: #1b1f22; -webkit-text-stroke: #1b1f22}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 20.0px; font: 12.0px Menlo; color: #1f762c; -webkit-text-stroke: #1f762c}
+    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 20.0px; font: 12.0px Menlo; color: #06214f; -webkit-text-stroke: #06214f}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 20.0px; font: 12.0px Menlo; color: #1b1f22; -webkit-text-stroke: #1b1f22; min-height: 14.0px}
+    span.s1 {font-kerning: none}
+    span.s2 {font-kerning: none; color: #1f762c; -webkit-text-stroke: 0px #1f762c}
+    span.s3 {font-kerning: none; color: #0744b8; -webkit-text-stroke: 0px #0744b8}
+    span.s4 {font-kerning: none; color: #06214f; -webkit-text-stroke: 0px #06214f}
+    span.s5 {font-kerning: none; color: #1b1f22; -webkit-text-stroke: 0px #1b1f22}
+    table.t1 {background-color: #ffffff; border-collapse: collapse}
+    td.td1 {width: 128.4px; padding: 0.0px 10.0px 0.0px 10.0px}
+    td.td2 {width: 128.4px; min-width: 50.0px; padding: 0.0px 10.0px 0.0px 10.0px}
+    td.td3 {width: 554.6px; padding: 0.0px 10.0px 0.0px 10.0px}
+  </style>
+</head>
+<body>
+<table cellspacing="0" cellpadding="0" class="t1">
+  <tbody>
+    <tr>
+      <td valign="top" class="td1">
+        <p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p3"><span class="s1">&lt;</span><span class="s2">html</span><span class="s1"> </span><span class="s3">lang</span><span class="s1">="</span><span class="s4">en</span><span class="s1">"&gt;</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p4"><span class="s5">&lt;</span><span class="s1">head</span><span class="s5">&gt;</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>&lt;</span><span class="s2">meta</span><span class="s1"> </span><span class="s3">charset</span><span class="s1">="</span><span class="s4">UTF-8</span><span class="s1">"&gt;</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p5"><span class="s5"><span class="Apple-converted-space">    </span>&lt;</span><span class="s2">meta</span><span class="s5"> </span><span class="s3">name</span><span class="s5">="</span><span class="s1">viewport</span><span class="s5">" </span><span class="s3">content</span><span class="s5">="</span><span class="s1">width=device-width, initial-scale=1.0</span><span class="s5">"&gt;</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>&lt;</span><span class="s2">title</span><span class="s1">&gt;List Evens&lt;/</span><span class="s2">title</span><span class="s1">&gt;</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p4"><span class="s5">&lt;/</span><span class="s1">head</span><span class="s5">&gt;</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p4"><span class="s5">&lt;</span><span class="s1">body</span><span class="s5">&gt;</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>&lt;</span><span class="s2">h1</span><span class="s1">&gt;Showing Even Number from 1 to 10&lt;/</span><span class="s2">h1</span><span class="s1">&gt;</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>&lt;</span><span class="s2">ul</span><span class="s1">&gt;</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p3"><span class="s1"><span class="Apple-converted-space">        </span>{% for x in range(1,11) %}</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p3"><span class="s1"><span class="Apple-converted-space">            </span>{% if x%2==0 %}</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p3"><span class="s1"><span class="Apple-converted-space">            </span>&lt;</span><span class="s2">li</span><span class="s1">&gt;Number {{ x }} is even&lt;/</span><span class="s2">li</span><span class="s1">&gt;</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p3"><span class="s1"><span class="Apple-converted-space">            </span>{% endif %}</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p3"><span class="s1"><span class="Apple-converted-space">        </span>{% endfor %}</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td3">
+        <p class="p6"><span class="s1"></span><br></p>
+        <p class="p6"><span class="s1"></span><br></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td3">
+        <p class="p6"><span class="s1"></span><br></p>
+        <p class="p6"><span class="s1"></span><br></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/</span><span class="s2">ul</span><span class="s1">&gt;</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p6"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p4"><span class="s5">&lt;/</span><span class="s1">body</span><span class="s5">&gt;</span></p>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" class="td2">
+        <p class="p2"><span class="s1"></span><br></p>
+      </td>
+      <td valign="top" class="td3">
+        <p class="p4"><span class="s5">&lt;/</span><span class="s1">html</span><span class="s5">&gt;</span></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Times; color: #000000; -webkit-text-stroke: #000000; min-height: 29.0px"><span class="s1"></span><br></h1>
+</body>
+</html>
