@@ -1,0 +1,57 @@
+AWSTemplateVersion: 2010-09-09
+
+Description: This template is for 101-kittens-carousel-static-website-ec2
+
+Resources:
+  WebEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: xxxxxxx
+      InstanceType: t2.micro
+        KeyName: ya_lin
+        SecurityGroupIds:
+          - e2011-cf-clarusway
+        
+        UserData:
+          Fn::Base64: 
+            !Sub |
+              #!/bin/bash -xe
+              yum update -y # to update existing packages
+              yum install -y https # to install web server
+              TOKEN= "XXXXXXXXXXXXXXXXXXX"
+              FOLDER="https://$TOKEN@raw.githubusercontent.com/clarusway/cw-workshop/dev/aws/projects/101-kittens-carousel-static-website-ec2/static-web/"
+            curl -s --create-dirs -o "/var/www/html/index.html" -L "$FOLDER"index.html
+            curl -s --create-dirs -o "/var/www/html/cat0.jpg" -L "$FOLDER"cat0.jpg
+            curl -s --create-dirs -o "/var/www/html/cat1.jpg" -L "$FOLDER"cat1.jpg
+            curl -s --create-dirs -o "/var/www/html/cat2.jpg" -L "$FOLDER"cat2.jpg
+            systemctl start httpd
+            systemctl enable httpd
+              
+        Tags:
+          - Key: Name
+            Value: e2011-cf-instance
+Outputs:
+  InstanceId:
+    Description: InstaceId of the first EC2 instance
+    Value: !Ref WebEC2Instance
+  PublicDNS:
+    Description: Public DNS Name of the EC2 instance
+    Value:!GetAtt
+      - WebEC2Instance
+      - PublicDnsName
+  PublicId: 
+    Description: Public IP address of the EC2 instance
+    Value: !GetAtt
+      - WebEC2Instance
+      - PublicIp
+
+          
+
+
+
+
+
+
+
+
+      
