@@ -89,7 +89,7 @@ def home():
 def index():
     if request.method == 'POST' : 
     	number = request.form['number']
-        return render_template("result.html", number_decimal=number)
+        return render_template("result.html", number_decimal = "number")
     else : 
         return render_template("index.html")
  
