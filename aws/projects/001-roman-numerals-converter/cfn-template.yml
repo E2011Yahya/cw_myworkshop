@@ -5,12 +5,7 @@ Description: >
   CloudFormation Template for Roman Numerals Converter Application. This template creates
   Python Flask Web Application on Amazon Linux 2 
   Roman Numerals Converter Application is downloaded from Github repository, then installed on Flask.
-Parameters:
- Parameters:
-  KeyPairName:
-    Description: Enter the name of your Key Pair for SSH connections.
-    Type: AWS::EC2::KeyPair::KeyName
-    ConstraintDescription: Must one of the existing EC2 KeyPair
+
 Resources:
   WebServerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -21,7 +16,7 @@ Resources:
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
-        - IpProtocol:tcp
+        - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
@@ -30,7 +25,7 @@ Resources:
     Properties:
       ImageId: ami-0c94855ba95c71c99
       InstanceType: t2.micro
-      KeyName: !Ref KeyPairName
+      KeyName: ya_lin
       SecurityGroupIds:
         - !Ref WebServerSecurityGroup
       Tags:                
@@ -44,15 +39,21 @@ Resources:
             yum update -y
             sudo yum install python3 -y
             sudo pip3 install flask
-            wget -P templates https://raw.githubusercontent.com/...............................
-            wget -P templates https://raw.githubusercontent.com/...............................
+            mkdir flaskapp
+            cd flaskapp
+            wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/001-roman-numerals-converter/templates/index.html
+            wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/001-roman-numerals-converter/templates/result.html
             wget https://raw.githubusercontent.com/......................................
 Outputs:
-  WebsiteURL:
-    Value: !Sub 
-      - www.${Domain}
-      - { Domain: !Ref RootDomainName }
-    Description:         
+  InstanceId:
+    Description: InstanceId of the first EC2 instance
+    Value: !Ref WebServerHost
+  PublicDNS:
+    Description: Public DNS Name of the EC2 instance
+    Value: !GetAtt 
+      - WebServerHost
+      - PublicDnsName
+            
 
 
 
