@@ -39,12 +39,11 @@ Resources:
             sudo yum update -y
             sudo yum install python3 -y
             sudo pip3 install flask
-            mkdir ~/flaskapp
-            sudo ln -sT ~/flaskapp /var/www/html/flaskapp
-            cd ~/flaskapp
-            wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/001-roman-numerals-converter/templates/index.html
-            wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/001-roman-numerals-converter/templates/result.html
-            https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/001-roman-numerals-converter/app.py
+            mkdir templates
+            wget -P templates https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/001-roman-numerals-converter/templates/index.html
+            wget -P templates https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/001-roman-numerals-converter/templates/result.html
+            wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/001-roman-numerals-converter/app.py
+            sudo python3 app.py
 Outputs:
   InstanceId:
     Description: InstanceId of the first EC2 instance
