@@ -36,14 +36,15 @@ Resources:
         Fn::Base64: 
           !Sub |
             #! /bin/bash
-            yum update -y
+            sudo yum update -y
             sudo yum install python3 -y
             sudo pip3 install flask
-            mkdir flaskapp
-            cd flaskapp
+            mkdir ~/flaskapp
+            sudo ln -sT ~/flaskapp /var/www/html/flaskapp
+            cd ~/flaskapp
             wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/001-roman-numerals-converter/templates/index.html
             wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/001-roman-numerals-converter/templates/result.html
-            wget https://raw.githubusercontent.com/......................................
+            https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/001-roman-numerals-converter/app.py
 Outputs:
   InstanceId:
     Description: InstanceId of the first EC2 instance
