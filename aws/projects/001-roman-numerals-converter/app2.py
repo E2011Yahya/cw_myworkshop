@@ -96,7 +96,7 @@ def index():
 
 @app.route("/result")
 def numberenter(number):
-    return render_template("result.html", number_roman = number)
+    return render_template("result.html", number_roman = def numberenter())
     
 
 if __name__ == '__main__':
