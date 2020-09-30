@@ -51,7 +51,8 @@ Resources:
             sudo python3 app.py
                        
 Outputs:
-  InstanceId:
+  InstanceId:ls
+  
     Description: InstanceId of the first EC2 instance
     Value: !Ref WebServerHost
   PublicDNS:
