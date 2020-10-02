@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: >
+  This template is prepared to create a stack for miliseconds converter app project. 
+  Template creates Application Load Balancer with Auto Scaling Group of 
+  Amazon Linux 2 EC2 Instances within default VPC.
+
+Parameters:
+  KeyPairName:
+    Description: Enter the name of your Key Pair for SSH connections
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: Must one of the existing EC2 KeyPair
+
+Resources:
+  myAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AvailabilityZones: !GetAZs 
+      LaunchConfigurationName: !Ref myLaunchConfig
+      HealthCheckType: ELB
+      HealthCheckGracePeriod: 90
+      MinSize: '1'
+      MaxSize: '3'
+      TargetGroupARNs:
+        - !Ref myALBTargetGroup
+
+  myLaunchTemplate:
+    Type: AWS::AutoScaling::LaunchTemplate
+    Properties:
+      KeyName: !Ref KeyName
+      ImageId: ami-0c94855ba95c71c99
+      SecurityGroups:
+        - !Ref mySecurityGroup
+      InstanceType: t2.micro
+      UserData: !Base64 |
+
+  myCPUPolicy:
+    Type: "AWS::AutoScaling::ScalingPolicy"
+    Properties:
+      AutoScalingGroupName: !Ref myAutoScalingGroup
+      PolicyType: TargetTrackingScaling
+      TargetTrackingConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ASGAverageCPUUtilization
+        TargetValue: !Ref PolicyTargetValue    
+        
+  myApplicationLoadBalancer:
+    Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
+    Properties:
+      SecurityGroups:
+        - !GetAtt mySecurityGroup.GroupId
+      Subnets: !Ref Subnets
+
+  myALBListener:
+    Type: "AWS::ElasticLoadBalancingV2::Listener"
+    Properties:
+      DefaultActions: 
+        - Type: forward
+          TargetGroupArn: !Ref myALBTargetGroup
+      LoadBalancerArn: !Ref myApplicationLoadBalancer
+      Port: 80
+      Protocol: HTTP
+
+  myALBTargetGroup:
+    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
+    Properties:
+
+      HealthCheckIntervalSeconds: 25
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 3
+      Port: 80
+      Protocol: HTTP
+      UnhealthyThresholdCount: 3
+      VpcId: !Ref VpcId        
+
+  mySecurityGroup: Project002SecGroup
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+        GroupDescription: Enable HTTP for Flask Web Server
+        GroupName: MilisecsProjectSecGroup
+        SecurityGroupIngress: 
+       - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      
+  WebServerHost:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      ImageId: "ami-007a607c4abd192db"
+      InstanceType: "t2.micro"
+
+Outputs:
+  URL:
+    Description: The URL of the website
+    Value: !Join 
+      - ''
+      - - 'http://'
+        - !GetAtt myApplicationLoadBalancer.DNSName
+
