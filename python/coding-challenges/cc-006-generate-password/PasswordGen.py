@@ -6,11 +6,10 @@ listname = list(lowername)
 setnums = set(nums)
 listnums = list(setnums)
 secretkey = []
-
 for i in listname[0:3]:
     if i == " " :
         letter = listname[4]
-        secret.append(letter)
+        secretkey.append(letter)
     else:
         secretkey.append(i) 
 
