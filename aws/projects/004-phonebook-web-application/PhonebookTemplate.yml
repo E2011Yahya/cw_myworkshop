@@ -22,30 +22,27 @@ Resources:
   WebserverSecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
-      GroupDescription: Allows HTTP (80) connections only from the security group of Application Load Balancer     
+      GroupDescription: Enable HTTP access via port 80, SSH access and MySQL/Aurora   
       SecurityGroupIngress:
         - FromPort: 80
           IpProtocol: tcp
           ToPort: 80
-          CidrIp: 0.0.0.0/0
           SourceSecurityGroupId: !GetAtt ALBsecurityGroup.GroupId
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
         - FromPort: 3306
-          IpProtocol: Mysql/Aurora
+          IpProtocol: '-1'
           ToPort: 3306
           CidrIp: 0.0.0.0/0
 
-  RDS_SecurityGroup:
+  RDSSecurityGroup:
     Type: "AWS::RDS::DBSecurityGroup"
     Properties:
       DBSecurityGroupIngress: #required
-        - FromPort: 3306
-          IpProtocol: Mysql/Aurora
-          ToPort: 3306
-          CidrIp: 0.0.0.0/0
+        - EC2SecurityGroupName:
+            Ref: WebserverSecurityGroup
       GroupDescription: DataBasaSecurityGroup #required
       
           
@@ -59,25 +56,33 @@ Resources:
         InstanceType: t2.micro
         KeyName: ya_lin
         SecurityGroupIds: 
-          - GetAtt WebserverSecurityGroup.GroupId
+          - !GetAtt WebserverSecurityGroup.GroupId
         TagSpecifications: 
           - ResourceType: instance
             Tags: 
             - Key: Name
               Value: !Sub Web Server of ${AWS::StackName}
-        UserData: String
+        UserData: 
           Fn::Base64:
             !Sub |
               #! /bin/bash
               sudo yum update -y
               sudo yum install python3 -y
               sudo pip3 install flask
-
+              cd /home/ec2-user
+              mkdir templates
+              cd templates
+              wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/004-phonebook-web-application/templates/index.html
+              wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/004-phonebook-web-application/templates/add-update.html 
+              wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/004-phonebook-web-application/templates/delete.html
+              cd ..
+              wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/004-phonebook-web-application/phonebook-app.py
+              sudo python3 app.py
 
   ALBTargetGroup:
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
-      HealthCheckEnabled: Yes
+      HealthCheckEnabled: true
       HealthCheckIntervalSeconds: 30
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 3
@@ -92,14 +97,14 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties: 
       SecurityGroups: 
-        - !GetAtt ALBSecurityGroup.GroupId 
+        - !GetAtt ALBsecurityGroup.GroupId 
       Subnets: 
         - subnet-b5258a94
-          subnet-4f5aae7e
-          subnet-7248d27c
-          subnet-acd575ca
-          subnet-9876dbc7
-          subnet-e182f2ac
+        - subnet-4f5aae7e
+        - subnet-7248d27c
+        - subnet-acd575ca
+        - subnet-9876dbc7
+        - subnet-e182f2ac
       Type: application 
      
         
@@ -118,46 +123,37 @@ Resources:
     Properties:
       AvailabilityZones:
         !GetAZs 
-      DesiredCapacity: 2
+      DesiredCapacity: '2'
       HealthCheckGracePeriod: 90
       HealthCheckType: ELB
       LaunchTemplate: 
         LaunchTemplateId: !Ref WebserverLaunchTemplate
         Version: !GetAtt WebserverLaunchTemplate.DefaultVersionNumber      
-      MaxSize: 3 #required
-      MinSize: 1 #required
+      MaxSize: '3' #required
+      MinSize: '1' #required
       TargetGroupARNs:
         - !Ref ALBTargetGroup
 
   RDSinstance:
     Type: "AWS::RDS::DBInstance"
     Properties:
-      AllocatedStorage: 20
-      AssociatedRoles:
-        - DBInstanceRole
+      AllocatedStorage: '20'
       BackupRetentionPeriod: 7
       DBInstanceClass: db.t2.micro #required
-      DBInstanceIdentifier: String
+      #DBInstanceIdentifier: PhonebookDatabaseRDS
       DBName: PhonebookDatabase
       DBSecurityGroups: 
-        - !GetAtt RDS_SecurityGroup.GroupId 
+        - !Ref RDSSecurityGroup
       DeleteAutomatedBackups: true
       DeletionProtection: true
       Engine: mysql
-      EngineVersion: MySQL 8.0.20
+      EngineVersion: 8.0.20
       MasterUserPassword: P123456789
       MasterUsername: admin
-      Port: 3306
-      PreferredBackupWindow: "01:00-02:00" UTC
-      PreferredMaintenanceWindow: "Sun:05:00-Sun:06:00" UTC
+      Port: '3306'
+      #PreferredBackupWindow: 01:00-02:00 
+      #PreferredMaintenanceWindow: Sun:05:00-Sun:06:00 
       PubliclyAccessible: true
-      Tags:
-        - Tag
-      Timezone: String
-      UseDefaultProcessorFeatures: Boolean
-      VPCSecurityGroups:
-        - String
-  
   
 Outputs:
   WebsiteURL:
@@ -165,7 +161,7 @@ Outputs:
       - http://${ALBAddress}
       - ALBAddress: !GetAtt ApplicationLoadBalancer.DNSName
     Description: Phonebook Application Load Balancer URL
-  RDS-endpoint:
+  RDSendpoint:
     Description: Phonebook DB endpoint
     Value: !Ref RDSinstance
     
