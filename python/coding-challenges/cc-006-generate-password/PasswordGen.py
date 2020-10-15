@@ -1,10 +1,10 @@
-name = input("Please enter your full name : ")
+name = set(input("Please enter your full name : ").lower().replace(" ", ""))
 nums = "1234567890"
 
-lowername = set(name.lower())
-listname = list(lowername)
+listname = list(name)
 setnums = set(nums)
 listnums = list(setnums)
+
 secretkey = []
 for i in listname[0:3]:
     if i == " " :
@@ -13,13 +13,11 @@ for i in listname[0:3]:
     else:
         secretkey.append(i) 
 
-
 for i in listnums[0:4]:
     secretkey.append(i)
 
 password = ""
 for i in secretkey:
     password += i
-
 
 print(password)
