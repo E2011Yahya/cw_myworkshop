@@ -2,9 +2,9 @@ AWSTemplateFormatVersion: 2010-09-09
 
   
 Description: >
-  CloudFormation Template for Roman Numerals Converter Application. This template creates
-  Python Flask Web Application on Amazon Linux 2 
-  Roman Numerals Converter Application is downloaded from Github repository, then installed on Flask.
+  This template is prepared to create a stack for miliseconds converter app project. 
+  Template creates Application Load Balancer with Auto Scaling Group of 
+  Amazon Linux 2 EC2 Instances within default VPC.
 
 
 
@@ -40,19 +40,18 @@ Resources:
             sudo yum update -y
             sudo yum install python3 -y
             sudo pip3 install flask
+            cd /home/ec2-user
             mkdir flaskapp
             cd flaskapp 
             mkdir templates
             cd templates
-            wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/001-roman-numerals-converter/templates/index.html
-            wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/001-roman-numerals-converter/templates/result.html
+            wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/002-milliseconds-converter/templates/index.html
+            wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/002-milliseconds-converter/templates/result.html
             cd ..
-            wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/001-roman-numerals-converter/app.py
+            wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/002-milliseconds-converter/app.py
             sudo python3 app.py
-                       
 Outputs:
-  InstanceId:ls
-  
+  InstanceId:
     Description: InstanceId of the first EC2 instance
     Value: !Ref WebServerHost
   PublicDNS:
