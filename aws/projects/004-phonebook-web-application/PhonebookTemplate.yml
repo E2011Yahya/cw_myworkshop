@@ -68,8 +68,9 @@ Resources:
               #! /bin/bash
               sudo yum update -y
               sudo yum install python3 -y
-              sudo pip3 install flask
+              sudo pip3 install flask              
               cd /home/ec2-user
+              mkdir dbserver.endpoint
               mkdir templates
               cd templates
               wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/004-phonebook-web-application/templates/index.html
@@ -77,7 +78,7 @@ Resources:
               wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/004-phonebook-web-application/templates/delete.html
               cd ..
               wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/004-phonebook-web-application/phonebook-app.py
-              sudo python3 app.py
+              sudo python3 phonebook-app.py
 
   ALBTargetGroup:
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
