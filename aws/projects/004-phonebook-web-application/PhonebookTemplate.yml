@@ -18,7 +18,7 @@ Resources:
           IpProtocol: tcp
           ToPort: 80
           CidrIp: 0.0.0.0/0
-      #VpcId: String if not written stack makes it default
+      #VpcId:  if not written stack makes it default
   WebserverSecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
@@ -27,6 +27,7 @@ Resources:
         - FromPort: 80
           IpProtocol: tcp
           ToPort: 80
+          #CidrIp: 0.0.0.0/0
           SourceSecurityGroupId: !GetAtt ALBsecurityGroup.GroupId
         - IpProtocol: tcp
           FromPort: 22
@@ -35,8 +36,8 @@ Resources:
         - FromPort: 3306
           IpProtocol: '-1'
           ToPort: 3306
-          CidrIp: 0.0.0.0/0
-
+          CidrIp: 0.0.0.0/0 
+          
   RDSSecurityGroup:
     Type: "AWS::RDS::DBSecurityGroup"
     Properties:
@@ -68,9 +69,10 @@ Resources:
               #! /bin/bash
               sudo yum update -y
               sudo yum install python3 -y
-              sudo pip3 install flask              
+              sudo pip3 install flask  
+              sudo pip3 install flask-mysql 
+              sudo pip3 install Flask-Ext           
               cd /home/ec2-user
-              mkdir dbserver.endpoint
               mkdir templates
               cd templates
               wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/004-phonebook-web-application/templates/index.html
@@ -79,7 +81,7 @@ Resources:
               cd ..
               wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/004-phonebook-web-application/phonebook-app.py
               sudo python3 phonebook-app.py
-
+              echo "${myRDSDatabase.Endpoint.Address}" >> dbserver.endpoint
   ALBTargetGroup:
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
@@ -146,7 +148,7 @@ Resources:
       DBSecurityGroups: 
         - !Ref RDSSecurityGroup
       DeleteAutomatedBackups: true
-      DeletionProtection: true
+      DeletionProtection: false
       Engine: mysql
       EngineVersion: 8.0.20
       MasterUserPassword: P123456789
