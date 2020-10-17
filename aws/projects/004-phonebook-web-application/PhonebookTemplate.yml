@@ -24,8 +24,8 @@ Resources:
     Properties:
       GroupDescription: Enable HTTP access via port 80, SSH access and MySQL/Aurora   
       SecurityGroupIngress:
-        - FromPort: 80
-          IpProtocol: tcp
+        - IpProtocol: tcp
+          FromPort: 80
           ToPort: 80
           #CidrIp: 0.0.0.0/0
           SourceSecurityGroupId: !GetAtt ALBsecurityGroup.GroupId
@@ -69,9 +69,9 @@ Resources:
               #! /bin/bash
               sudo yum update -y
               sudo yum install python3 -y
-              sudo pip3 install flask  
-              sudo pip3 install flask-mysql 
-              sudo pip3 install Flask-Ext           
+              sudo pip3 install flask 
+              sudo pip3 install flask_sqlalchemy 
+              sudo pip3 install flask-mysql           
               cd /home/ec2-user
               mkdir templates
               cd templates
@@ -80,8 +80,8 @@ Resources:
               wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/004-phonebook-web-application/templates/delete.html
               cd ..
               wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/aws/projects/004-phonebook-web-application/phonebook-app.py
+              echo "${RDSinstance.Endpoint.Address}" >> dbserver.endpoint
               sudo python3 phonebook-app.py
-              echo "${myRDSDatabase.Endpoint.Address}" >> dbserver.endpoint
   ALBTargetGroup:
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
@@ -144,18 +144,18 @@ Resources:
       BackupRetentionPeriod: 7
       DBInstanceClass: db.t2.micro #required
       #DBInstanceIdentifier: PhonebookDatabaseRDS
-      DBName: PhonebookDatabase
+      DBName: phonebook
       DBSecurityGroups: 
         - !Ref RDSSecurityGroup
       DeleteAutomatedBackups: true
       DeletionProtection: false
       Engine: mysql
       EngineVersion: 8.0.20
-      MasterUserPassword: P123456789
+      MasterUserPassword: clarusway-1
       MasterUsername: admin
       Port: '3306'
-      #PreferredBackupWindow: 01:00-02:00 
-      #PreferredMaintenanceWindow: Sun:05:00-Sun:06:00 
+      PreferredBackupWindow: 01:00-02:00 
+      PreferredMaintenanceWindow: sun:05:00-sun:06:00 
       PubliclyAccessible: true
   
 Outputs:
