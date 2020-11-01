@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -28,9 +28,9 @@ def admin():
 def greet(name):
     return  f"Hello, {name}"
 
-@app.route("/greet-admin)
+@app.route("/greet-admin")
 def greet_admin():
-    Return redirect(url_for("greet", name = "Master Admin!!!!"))
+    return redirect(url_for("greet", name = "Master Admin!!!!"))
 
 @app.route('/<name>')
 def greet(name):

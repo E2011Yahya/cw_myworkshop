@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  Bookstore-cfn-template aims to create a bookstore web service using Docker.
+  The application code is to be deployed as a RESTful web service with Flask using Dockerfile 
+  and Docker Compose on AWS Elastic Compute Cloud (EC2) Instance using AWS Cloudformation Service.
+
+
+  
+Resources:
+  WebserverSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: Enable HTTP access via port 80, SSH access and MySQL/Aurora   
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0  # if source security group written don't specify CidrIp
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: '-1' #specifying -1 rather than tcp, udp, icmp, or icmpv6 allows traffic on all ports,
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: 0.0.0.0/0 
+          
+  RDSSecurityGroup:
+    Type: "AWS::RDS::DBSecurityGroup"
+    Properties:
+      DBSecurityGroupIngress: #required
+        - EC2SecurityGroupName:
+            Ref: WebserverSecurityGroup
+      GroupDescription: DataBasaSecurityGroup #required
+      
+          
+
+  WebserverLaunchTemplate:
+    Type: "AWS::EC2::LaunchTemplate"
+    Properties:
+      LaunchTemplateName: CFlaunchtemplate
+      LaunchTemplateData:
+        ImageId: ami-0947d2ba12ee1ff75
+        InstanceType: t2.micro
+        KeyName: ya_lin
+        SecurityGroupIds: 
+          - !GetAtt WebserverSecurityGroup.GroupId
+        TagSpecifications: 
+          - ResourceType: instance
+            Tags: 
+            - Key: Name
+              Value: !Sub Web Server of ${AWS::StackName}
+        UserData: 
+          Fn::Base64:
+            !Sub |
+              #! /bin/bash
+              yum update -y
+              amazon-linux-extras install docker -y
+              systemctl start docker
+              systemctl enable docker
+              usermod -a -G docker ec2-user
+              curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" \
+              -o /usr/local/bin/docker-compose
+              chmod +x /usr/local/bin/docker-compose
+              mkdir bookstore-api
+              cd bookstore
+              
+
+
+  
+  
+Outputs:
+  InstanceId:
+    Description: InstanceId of the first EC2 instance
+    Value: !Ref WebserverLaunchTemplate
+  PublicDNS:
+    Description: Public DNS Name of the EC2 instance
+    Value: !GetAtt 
+      - WebserverLaunchTemplate
+      - PublicDnsName
+    
