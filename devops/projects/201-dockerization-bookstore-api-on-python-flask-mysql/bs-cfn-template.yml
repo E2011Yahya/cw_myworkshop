@@ -49,7 +49,7 @@ Resources:
           chmod +x /usr/local/bin/docker-compose
           mkdir bookstore-api
           cd bookstore-api
-          https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/devops/projects/201-dockerization-bookstore-api-on-python-flask-mysql/docker-compose.yml
+          wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/devops/projects/201-dockerization-bookstore-api-on-python-flask-mysql/docker-compose.yml
           wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/devops/projects/201-dockerization-bookstore-api-on-python-flask-mysql/Dockerfile
           wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/devops/projects/201-dockerization-bookstore-api-on-python-flask-mysql/requirements.txt
           wget https://raw.githubusercontent.com/E2011Yahya/cw_myworkshop/master/devops/projects/201-dockerization-bookstore-api-on-python-flask-mysql/bookstore-api.py

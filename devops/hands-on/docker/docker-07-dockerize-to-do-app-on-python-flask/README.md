@@ -6,7 +6,11 @@ Purpose of the this hands-on training is to dockerize an Python Flask applicatio
 
 At the end of the this hands-on training, students will be able to;
 
+<<<<<<< HEAD
 - build a Docker images.
+=======
+- build Docker images.
+>>>>>>> 8d342a4c8610e8e7231f41ea49ff7027ad5c7e26
 
 - configure Docker Compose to run Python Flask app.
 
@@ -233,9 +237,14 @@ if __name__== '__main__':
 - Create another file called `requirements.txt` in your project folder, add the followings as package list.
 
 ```bash
+<<<<<<< HEAD
 echo'
 flask
 flask-mysql' > requirements.txt
+=======
+flask
+flask-mysql
+>>>>>>> 8d342a4c8610e8e7231f41ea49ff7027ad5c7e26
 ```
 
 - Create a Dockerfile with followings.

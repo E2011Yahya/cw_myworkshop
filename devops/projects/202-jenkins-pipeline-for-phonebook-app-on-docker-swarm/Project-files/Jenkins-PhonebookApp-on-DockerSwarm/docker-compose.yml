@@ -1,0 +1,47 @@
+version: "3.7"
+
+services:
+  database:
+    image: mysql:5.7
+    volumes:
+      - db-data:/var/lib/mysql
+      #- ./init.sql:/docker-entrypoint-initdb.d/ böyle yazılbilir ama best practise config ile yapılması
+    configs:
+      - source: initialdatabase
+        target: /docker-entrypoint-iniydb.d/init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: P1234p
+            MYSQL_DATABASE: phonebook_db
+            MYSQL_USER: admin
+            MYSQL_PASSWORD: Clarusway_1
+            MYSQL_PORT: 3306
+    networks: 
+      - clarusnet
+
+  myapp:
+    image: "${ECR_REGISTRY}/${APP_REPO_NAME}:latest"
+    deploy:
+      mode: global
+      update_config:
+        parallelism: 2
+        delay: 5s
+        order: start-first
+    restart: always
+    depends_on:   
+      -  database
+    ports: 
+      -  80:80
+    networks:
+      -  clarusnet
+  
+networks:
+  clarusnet:
+    driver: overlay      
+
+volumes:
+  db-data:
+
+
+configs:
+  initialdatabase:
+    file: ./init.sql

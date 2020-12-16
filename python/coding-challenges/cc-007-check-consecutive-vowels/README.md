@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Coding Challenge - 014: Check Consecutive Vowels
+=======
+# Coding Challenge - 007: Check Consecutive Vowels
+>>>>>>> 8d342a4c8610e8e7231f41ea49ff7027ad5c7e26
 
 The purpose of this coding challenge is to write a program that checks if a word contains consecutive vowels or not.
 

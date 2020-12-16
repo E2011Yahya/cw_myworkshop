@@ -1,0 +1,236 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  This Cloudformation Template creates five Compose enabled Docker Machines on EC2 Instances
+  which are ready for Docker Swarm operations (Docker Swarm with 3 manager and 2 worker node instances)
+  it gives the swarm node instances with IAM Role allowing them to work with ECR repos using the instance profile
+  Installs AWS CLI `Version 2` on swarm node instances to use `aws ecr` commands.
+  Docker Machines will run on Amazon Linux 2 with custom security group 
+  allowing SSH (22), HTTP (80) and TCP(2377, 8080) connections from anywhere.
+  User needs to select appropriate key name when launching the template.
+
+Parameters:
+  KeyPairName:
+    Description: Enter the name of your Key Pair for SSH connections.
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: Must be one of the existing EC2 KeyPair
+
+Resources:
+  EC2FullAccessToECR:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument: 
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess
+      
+  EC2toECRProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Roles: #required
+        - !Ref EC2FullAccessToECR
+        
+  
+  DockerMachinesSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: Enable SSH and HTTP for Docker Machines #required
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 2377
+          ToPort: 2377
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+
+  ManagerMachine1:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      ImageId: ami-04bf6dcdc9ab498ca
+      InstanceType: t2.micro
+      KeyName: !Ref KeyPairName 
+      IamInstanceProfile: !Ref EC2toECRProfile
+      SecurityGroupIds:
+        - !GetAtt DockerMachinesSecurityGroup.GroupId
+      Tags:
+        - 
+          Key: Name
+          Value: "Grand-Master"
+      UserData: 
+        Fn::Base64: |
+          #! /bin/bash
+          yum update -y
+          amazon-linux-extras install docker -y
+          systemctl start docker
+          systemctl enable docker
+          usermod -a -G docker ec2-user
+          curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" \
+          -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          ./aws/install
+          yum install git -y
+          docker swarm init
+          docker swarm join-token manager
+          docker service create \
+          --name=viz \
+          --publish=8080:8080/tcp \
+          --constraint=node.role==manager \
+          --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock \
+          dockersamples/visualizer
+  
+  ManagerLaunchTemplate:
+    Type: "AWS::EC2::LaunchTemplate"
+    Properties:
+      LaunchTemplateName: DockerManagerMachines
+      LaunchTemplateData:
+        IamInstanceProfile: 
+          Arn: !GetAtt EC2toECRProfile.Arn
+        ImageId: ami-04bf6dcdc9ab498ca
+        InstanceType: t2.micro
+        KeyName: !Ref KeyPairName
+        SecurityGroupIds:
+          - !GetAtt DockerMachinesSecurityGroup.GroupId
+        UserData:
+          Fn::Base64: |
+            #! /bin/bash
+            yum update -y
+            amazon-linux-extras install docker -y
+            systemctl start docker
+            systemctl enable docker
+            usermod -a -G docker ec2-user
+            curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" \
+            -o /usr/local/bin/docker-compose
+            chmod +x /usr/local/bin/docker-compose
+            yum install python3 -y
+            pip install ec2instanceconnectcli
+            DENEME1=$(mssh ${ManagerMachine1.ImageId} docker swarm join-token manager | grep docker)
+            eval $DENEME1
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            ./aws/install
+
+  ManagerMachine2:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      LaunchTemplate:
+        LaunchTemplateId: !Ref ManagerLaunchTemplate
+        Version: !GetAtt ManagerLaunchTemplate.LatestVersionNumber
+      Tags:
+        - Key: Name 
+          Value: !Sub Docker Manager2 of ${AWS::StackName}
+      
+  ManagerMachine3:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      LaunchTemplate:
+        LaunchTemplateId: !Ref ManagerLaunchTemplate
+        Version: !GetAtt ManagerLaunchTemplate.LatestVersionNumber
+      Tags:
+        - Key: Name 
+          Value: !Sub Docker Manager3 of ${AWS::StackName}
+        
+
+  WorkerLaunchTemplate:
+    Type: "AWS::EC2::LaunchTemplate"
+    Properties:
+      LaunchTemplateName: DockerWorkerMachines
+      LaunchTemplateData:
+        IamInstanceProfile: 
+          Arn: !GetAtt EC2toECRProfile.Arn
+        ImageId: ami-04bf6dcdc9ab498ca
+        InstanceType: t2.micro
+        KeyName: !Ref KeyPairName
+        SecurityGroupIds:
+          - !GetAtt DockerMachinesSecurityGroup.GroupId
+        UserData:
+          Fn::Base64: |
+            #! /bin/bash
+            yum update -y
+            amazon-linux-extras install docker -y
+            systemctl start docker
+            systemctl enable docker
+            usermod -a -G docker ec2-user
+            curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" \
+            -o /usr/local/bin/docker-compose
+            chmod +x /usr/local/bin/docker-compose
+            yum install python3 -y
+            pip install ec2instanceconnectcli
+            DENEME1=$(mssh ${ManagerMachine1.ImageId} docker swarm join-token worker | grep docker)
+            eval $DENEME1
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            ./aws/install
+
+  WorkerMachine1:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      LaunchTemplate:
+        LaunchTemplateId: !Ref WorkerLaunchTemplate
+        Version: !GetAtt WorkerLaunchTemplate.LatestVersionNumber
+      Tags:
+        - Key: Name 
+          Value: !Sub Docker Worker1 of ${AWS::StackName}
+     
+  WorkerMachine2:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      LaunchTemplate:
+        LaunchTemplateId: !Ref WorkerLaunchTemplate
+        Version: !GetAtt WorkerLaunchTemplate.LatestVersionNumber
+      Tags:
+        - Key: Name 
+          Value: !Sub Docker Worker2 of ${AWS::StackName}  
+
+Outputs:
+  VizWebPage:
+    Description: Docker Grand-Master DNS Name
+    Value: !Sub 
+      - http://${PublicAddress}:8080
+      - PublicAddress: !GetAtt ManagerMachine1.PublicDnsName
+
+  ManagerMachine1URL:
+    Description: Manager Machine 1 DNS Name
+    Value: !Sub 
+      - ${PublicAddress}
+      - PublicAddress: !GetAtt ManagerMachine1.PublicDnsName
+
+  ManagerMachine2URL:
+    Description: Manager Machine 2 DNS Name
+    Value: !Sub 
+      - ${PublicAddress}
+      - PublicAddress: !GetAtt ManagerMachine2.PublicDnsName    
+
+  ManagerMachine3URL:
+    Description: Manager Machine 3 DNS Name
+    Value: !Sub 
+      - ${PublicAddress}
+      - PublicAddress: !GetAtt ManagerMachine3.PublicDnsName 
+
+  WorkerMachine1URL:
+    Description: Worker Machine 1 DNS Name
+    Value: !Sub 
+      - ${PublicAddress}
+      - PublicAddress: !GetAtt WorkerMachine1.PublicDnsName     
+
+  WorkerMachine2URL:
+    Description: Worker Machine 2 DNS Name
+    Value: !Sub 
+      - ${PublicAddress}
+      - PublicAddress: !GetAtt WorkerMachine2.PublicDnsName 
