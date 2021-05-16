@@ -66,7 +66,7 @@ interpreter_python=auto_silent
 - Copy your pem file to the /etc/ansible/ directory. First go to your pem file directory on your local computer and run the following command.
 
 ```bash
-$ scp -i <pem file> <pem file> ec2-user@<public DNS name of the control node>:/home/ec2-user
+$ sudo scp -i <pem file> <pem file> ec2-user@<public DNS name of the control node>:/home/ec2-user
 ```
 
 - or you can create a file name <pem file> into the directory /etc/ansible on the control node and copy your pem file into it.
